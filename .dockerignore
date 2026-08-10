@@ -42,3 +42,4 @@ docker-compose*
 # ==========================================
 # We want to ignore the secrets but we allow the output folder framework to pass
 !.env.example
+docs/

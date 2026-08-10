@@ -1,0 +1,57 @@
+9<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agentic QA Fuzzer | Autonomous Security</title>
+    <meta name="description" content="Autonomous AI Penetration Tester that discovers unhandled server exceptions.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="background-elements">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+    </div>
+
+    <main class="container">
+        <header class="header">
+            <h1>Agentic QA Fuzzer</h1>
+            <p>Autonomous AI Vulnerability Discovery</p>
+        </header>
+
+        <section class="fuzzer-card glass">
+            <div class="input-group">
+                <label for="targetUrl">Target API URL</label>
+                <input type="url" id="targetUrl" placeholder="https://staging.your-api.com" required>
+                <small>The agent will attempt to crash this endpoint and generate a regression test.</small>
+            </div>
+
+            <button id="fuzzBtn" class="primary-btn">
+                <span class="btn-text">Commence Fuzzing</span>
+                <div class="spinner hidden"></div>
+            </button>
+        </section>
+
+        <section id="resultsSection" class="results-card glass hidden">
+            <div class="results-header">
+                <h2>Vulnerability Report</h2>
+                <span id="statusBadge" class="badge">Success</span>
+            </div>
+            
+            <p id="resultMessage"></p>
+            <p class="meta-info">Total Tool Calls: <span id="toolCallsCount">0</span></p>
+
+            <div id="codeContainer" class="code-container hidden">
+                <div class="code-header">
+                    <span>test_vulnerability.py</span>
+                    <button id="downloadBtn" class="secondary-btn">Download .py</button>
+                </div>
+                <pre><code id="codeBlock"></code></pre>
+            </div>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>

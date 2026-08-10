@@ -18,6 +18,7 @@ fetching) within an explicit MCP server over standard JSON-RPC 2.0 primitives/pi
 """
 
 import json
+import os
 import re
 import sys
 from pathlib import Path
@@ -129,10 +130,15 @@ async def save_test_case(
             clean_name = "root"
         filename = f"test_vulnerability_{clean_name}.py"
 
-        # Check standard container mount (/app/generated-tests) vs local sibling directory
-        container_dir = Path("/app/generated-tests")
-        local_dir = Path("generated-tests")
-        output_dir = container_dir if Path("/app").exists() else local_dir
+        # Use FUZZER_OUTPUT_DIR if set (for concurrency in Cloud Run), else fallback to generated-tests
+        fuzzer_output_dir = os.environ.get("FUZZER_OUTPUT_DIR")
+        if fuzzer_output_dir:
+            output_dir = Path(fuzzer_output_dir)
+        else:
+            container_dir = Path("/app/generated-tests")
+            local_dir = Path("generated-tests")
+            output_dir = container_dir if Path("/app").exists() else local_dir
+            
         output_dir.mkdir(parents=True, exist_ok=True)
 
         file_path = output_dir / filename
