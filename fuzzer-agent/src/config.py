@@ -22,7 +22,7 @@ class AppConfig:
     def __init__(self) -> None:
         self.LLM_PROVIDER: str = os.getenv("LLM_PROVIDER", "gemini")
         self.TARGET_API_URL: str = os.getenv("TARGET_API_URL", "http://localhost:8000")
-        self.MAX_RECURSION_LIMIT: int = int(os.getenv("MAX_RECURSION_LIMIT", "5"))
+        self.MAX_RECURSION_LIMIT: int = int(os.getenv("MAX_RECURSION_LIMIT", "20"))
 
     @staticmethod
     def _get_required_env(key: str) -> str:
