@@ -5,9 +5,12 @@ langgraph==1.2.7
 langchain-core==1.4.8
 
 # ==========================================
-# Google Gemini LLM Integration
+# LLM Providers Integration
 # ==========================================
 langchain-google-genai==4.2.6
+langchain-groq
+langchain-ollama
+langchain-openai
 
 # ==========================================
 # Model Context Protocol (MCP) — Tool Proxying

@@ -20,7 +20,10 @@ from pathlib import Path
 from typing import Annotated, Any, TypedDict
 
 from langchain_core.messages import BaseMessage, HumanMessage, SystemMessage
-from langchain_google_genai import ChatGoogleGenerativeAI
+try:
+    from .llm_provider import get_llm
+except ImportError:
+    from llm_provider import get_llm
 from langchain_mcp_adapters.client import MultiServerMCPClient
 from langgraph.graph import END, START, StateGraph
 from langgraph.graph.message import add_messages
@@ -80,11 +83,7 @@ mcp_client = MultiServerMCPClient(
 )
 
 # LLM instantiated once at module load, not on every graph iteration.
-llm = ChatGoogleGenerativeAI(
-    model="gemini-2.0-flash",
-    google_api_key=settings.GEMINI_API_KEY,
-    temperature=0.1,
-)
+llm = get_llm(temperature=0.1)
 
 
 # ==========================================

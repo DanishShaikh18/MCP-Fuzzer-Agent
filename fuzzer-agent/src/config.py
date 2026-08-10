@@ -20,7 +20,7 @@ class AppConfig:
     """
 
     def __init__(self) -> None:
-        self.GEMINI_API_KEY: str = self._get_required_env("GEMINI_API_KEY")
+        self.LLM_PROVIDER: str = os.getenv("LLM_PROVIDER", "gemini")
         self.TARGET_API_URL: str = os.getenv("TARGET_API_URL", "http://localhost:8000")
         self.MAX_RECURSION_LIMIT: int = int(os.getenv("MAX_RECURSION_LIMIT", "5"))
 
