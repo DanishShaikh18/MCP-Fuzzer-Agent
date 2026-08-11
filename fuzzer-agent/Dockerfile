@@ -2,11 +2,10 @@ FROM python:3.13-slim
 
 WORKDIR /app
 
-COPY requirements.txt .
+COPY fuzzer-agent/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY src/ ./src/
-COPY cli.py .
+COPY fuzzer-agent/src/ ./src/
 
 # Generated test output directory (no longer strictly needed, but kept for fallback)
 RUN mkdir -p /app/generated-tests
