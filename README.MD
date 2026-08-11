@@ -4,23 +4,29 @@
 
 An autonomous, AI-driven API fuzzing agent deployed on Google Cloud. Unlike traditional fuzzers that rely on random input generation, this system uses a Large Language Model (LLM) to intelligently read OpenAPI schemas, understand validation boundaries, and actively mutate payloads to bypass input validation (422/400). It escalates attacks until it uncovers an unhandled server exception (500) and automatically writes a standalone regression test to prove it.
 
-## ☁️ Cloud Architecture & Security
+## 🧠 Agentic AI Architecture
 
-This project represents a modern **AI + Cloud** architecture, prioritizing scalability, stateless execution, and strict identity-based security. 
+The core of the fuzzer is built on **LangGraph**, utilizing a ReAct (Reasoning + Acting) loop for autonomous decision making. 
 
-1. **Frontend**: A static HTML/CSS/JS interface hosted globally on **GitHub Pages**.
-2. **Backend**: A stateless FastAPI wrapper around a LangGraph AI agent, deployed to **Google Cloud Run**. 
-3. **Secure Secrets Management**: 
-   - LLM API keys are **never** hardcoded or passed as plaintext environment variables. 
-   - They are encrypted and stored in **Google Secret Manager**.
-   - A dedicated **Service Account** with strict IAM bindings (`roles/secretmanager.secretAccessor`) is attached to the Cloud Run instance. This ensures that *only* the authorized fuzzer backend has the cryptographic authority to read the API keys at runtime.
+- **Reconnaissance**: The agent first uses tools to download and parse the target API's OpenAPI specification, mapping out routes, parameters, and constraints.
+- **Adversarial Probing**: It iteratively crafts malformed payloads (e.g., passing `null` arrays, type mismatches, or negative integers) to trigger edge cases.
+- **MCP Sandbox Isolation**: For strict security, the LLM reasoning layer is isolated from execution. It has **zero direct access** to the network or filesystem. Instead, it requests actions via the **Model Context Protocol (MCP)**, communicating over `stdio` with a dedicated `FastMCP` subprocess. If a network request hangs or crashes, the agent loop survives and simply receives the error as text to adapt its next payload.
 
-### How it works
-1. You enter a target API URL into the GitHub Pages interface.
-2. The frontend sends the URL to the Cloud Run backend.
-3. The backend runs the AI agent. The agent proxies all HTTP requests through a Model Context Protocol (MCP) server subprocess (a sandbox) to ensure the LLM never executes raw network calls directly.
-4. If the agent crashes the target API (HTTP 500), it generates a Python regression test in temporary memory (`/tmp`).
-5. The FastAPI backend reads the `.py` file and streams it directly back to the frontend as a downloadable file, meaning zero persistent storage or bucket costs.
+## ☁️ Cloud Infrastructure & Security
+
+The project employs a modern, enterprise-grade serverless architecture on **Google Cloud Platform (GCP)**, optimized for stateless execution and zero-trust security.
+
+- **Compute specs**: Deployed on **Cloud Run** in the `asia-south1` region, provisioned with **2 vCPUs** and **1Gi of Memory** per instance to handle concurrent LLM generation and HTTP requests.
+- **Bounded Scaling**: Configured with `--max-instances="4"` to prevent runaway costs while ensuring high availability.
+- **Strict IAM Identity**: The application runs under a dedicated, least-privilege **Service Account** (`fuzzer-sa`).
+- **Cryptographic Secrets Management**: LLM API keys (e.g., Groq/Gemini) are **never** stored in environment variables. They are injected at runtime via **Google Secret Manager**, which the `fuzzer-sa` accesses using the strict `roles/secretmanager.secretAccessor` IAM policy.
+
+### Application Workflow
+1. You enter a target API URL into the **GitHub Pages** frontend.
+2. A cross-origin request hits the Cloud Run backend.
+3. The FastAPI server spawns a temporary directory in memory (`/tmp`) and kicks off the LangGraph agent.
+4. If a vulnerability is found, the agent writes the regression test to the ephemeral `/tmp` directory.
+5. The API streams the generated `.py` file back to the client and instantly destroys the container's temporary state.
 
 ## 🎯 Example Output
 
@@ -49,8 +55,8 @@ def test_vulnerability_update_profile():
 ```
 
 ## 🛠️ Tech Stack
-- **Cloud Infrastructure**: Google Cloud Run, Secret Manager, IAM Service Accounts
-- **Backend API**: FastAPI, Uvicorn, Docker
+- **Cloud Infrastructure**: GCP Cloud Run, Secret Manager, IAM Service Accounts, Docker
+- **Backend API**: FastAPI, Uvicorn
 - **AI Orchestration**: LangGraph, langchain-mcp-adapters
 - **Tool Sandbox**: FastMCP
 - **Frontend**: Vanilla HTML/JS, Glassmorphism CSS
