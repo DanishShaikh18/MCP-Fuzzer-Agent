@@ -1,7 +1,7 @@
 // Configuration - CHANGE THIS TO YOUR CLOUD RUN URL ONCE DEPLOYED!
 const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
     ? 'http://localhost:8080' 
-    : 'https://YOUR-CLOUD-RUN-URL.a.run.app';
+    : 'https://agentic-qa-fuzzer-251754336920.asia-south1.run.app';
 
 // DOM Elements
 const targetUrlInput = document.getElementById('targetUrl');
